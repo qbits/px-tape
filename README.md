@@ -10,7 +10,8 @@ loggers, layouts and let the user compose them how he likes in his own
 logging systems. For instance, you can share the same appender for all
 levels or not, have multiple appenders for X levels, different layouts
 etc, etc. Every component is **very** simple. I can imagine to provide
-default systems for common usages down the road.
+default systems for common usages down the road and also a way to
+generate/load systems from config as data (file, edn, etc).
 
 Work in progress.
 
