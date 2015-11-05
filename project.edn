@@ -1,0 +1,4 @@
+{:name cc.qbits/tape
+ :dependencies [[mpenet/component "0.1.0-alpha"]]
+ ;; :source-paths ["src"]
+ }
