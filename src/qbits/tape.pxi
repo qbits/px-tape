@@ -3,7 +3,7 @@
    [qbits.component :as component :refer [start stop]]
    [qbits.tape.layout.default :as layout]
    [qbits.tape.appender.console :as console]
-   [qbits.tape.time]
+   [qbits.aeon :as time]
    [pixie.uv :as uv]
    [qbits.tape.appender :as a]))
 
@@ -25,7 +25,8 @@
 (def default-layout (layout/new-default-layout))
 (def default-appender (console/new-console-appender))
 (def default-opts {:levels #{:info :warn :errors :fatal}
-                   :time-fn qbits.tape.time/now})
+                   :time-fn #(time/format (time/new-datetime)
+                                          "%Y-%m-%d %H:%M:%S")})
 
 (defrecord Message [level ns timestamp message])
 
