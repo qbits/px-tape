@@ -3,9 +3,9 @@
    [qbits.component :as component :refer [start stop]]
    [qbits.tape.layout.default :as layout]
    [qbits.tape.appender.console :as console]
+   [qbits.tape.time]
    [pixie.uv :as uv]
-   [qbits.tape.appender :as a]
-   [pixie.ffi-infer :as f]))
+   [qbits.tape.appender :as a]))
 
 ;; 1 logger per active level+appender, at discretion of the user to
 ;; share appenders/loggers/layouts systems should be generated from
@@ -24,27 +24,10 @@
 (def levels [:trace :debug :info :warn :error :fatal])
 (def default-layout (layout/new-default-layout))
 (def default-appender (console/new-console-appender))
-(def default-opts {:levels #{:info :warn :errors :fatal}})
+(def default-opts {:levels #{:info :warn :errors :fatal}
+                   :time-fn qbits.tape.time/now})
 
 (defrecord Message [level ns timestamp message])
-
-;; (f/with-config {:library "c"
-;;                 :cxx-flags ["-lc"]
-;;                 :includes ["time.h"]
-;;                 }
-;;   (def time_t (pixie.ffi/c-struct :time_t 8 [[:val CInt 0 ]]))
-;;   (f/defcfn time)
-;;   (f/defcstruct tm [:tm_sec
-;;                     :tm_min
-;;                     :tm_hour
-;;                     :tm_mday
-;;                     :tm_mon
-;;                     :tm_year
-;;                     :tm_wday
-;;                     :tm_yday
-;;                     :tm_isdst])
-;;   (f/defcfn gmtime)
-;;   (f/defcfn localtime))
 
 (defprotocol ILogger
   (log? [this level])
@@ -57,6 +40,7 @@
   (fatal [this entry]))
 
 (defrecord Logger [levels
+                   time-fn ;; get rid of this once we have more adv time utils
                    ;; deps
                    appender
                    layout]
@@ -69,13 +53,9 @@
   ILogger
   (log [this level message]
     (when (log? this level)
-      (let [ts (uv/uv_hrtime)
-            ;; t (timeval)
-            ;; _ (gettimeofday t (buffer 0))
-            ;; _ (prn t)
-            entry (->Message level
+      (let [entry (->Message level
                              (name *ns*)
-                             ts
+                             (time-fn)
                              message)]
         (a/append! appender entry))))
 
@@ -115,6 +95,6 @@
          :appenderA (component/using default-appender
                                      {:layout :layoutA})
          :layoutA default-layout
-         :loggerA (component/using (new-logger {:levels [:info :error]})
+         :loggerA (component/using (new-logger default-opts)
                                    {:appender :appenderA}))
         component/start)))
