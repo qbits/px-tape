@@ -15,6 +15,15 @@ etc).
 
 Work in progress.
 
+## Installation
+
+With [dust](https://github.com/pixie-lang/dust), add the following to
+your project.edn `:dependencies`:
+
+```clojure
+[mpenet/tape "0.1.1-alpha"]
+```
+
 ## License
 
 Copyright © 2015 [Max Penet](https://twitter.com/mpenet)
