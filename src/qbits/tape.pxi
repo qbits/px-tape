@@ -1,9 +1,11 @@
 (ns qbits.tape
   (:require
-   [qbits.component :as component]
+   [qbits.component :as component :refer [start stop]]
    [qbits.tape.layout.default :as layout]
    [qbits.tape.appender.console :as console]
-   [qbits.tape.logger :as l]))
+   [pixie.uv :as uv]
+   [qbits.tape.appender :as a]
+   [pixie.ffi-infer :as f]))
 
 ;; 1 logger per active level+appender, at discretion of the user to
 ;; share appenders/loggers/layouts systems should be generated from
@@ -14,7 +16,6 @@
 ;; FIXME/TODO:
 ;; * options everywhere, make what can be static static (ex *ns*)
 ;; * provide macro versions ? (depends on what jit does with noop calls)
-;; * still not happy with project layout (might shuffle things)
 ;; * do not depend on pixie.tty
 ;; * date formatting (via ffi)
 ;; * write more appenders/layouts
@@ -23,38 +24,97 @@
 (def levels [:trace :debug :info :warn :error :fatal])
 (def default-layout (layout/new-default-layout))
 (def default-appender (console/new-console-appender))
-
 (def default-opts {:levels #{:info :warn :errors :fatal}})
+
+(defrecord Message [level ns timestamp message])
+
+;; (f/with-config {:library "c"
+;;                 :cxx-flags ["-lc"]
+;;                 :includes ["time.h"]
+;;                 }
+;;   (def time_t (pixie.ffi/c-struct :time_t 8 [[:val CInt 0 ]]))
+;;   (f/defcfn time)
+;;   (f/defcstruct tm [:tm_sec
+;;                     :tm_min
+;;                     :tm_hour
+;;                     :tm_mday
+;;                     :tm_mon
+;;                     :tm_year
+;;                     :tm_wday
+;;                     :tm_yday
+;;                     :tm_isdst])
+;;   (f/defcfn gmtime)
+;;   (f/defcfn localtime))
+
+(defprotocol ILogger
+  (log? [this level])
+  (log [this level entry])
+  (debug [this entry])
+  (trace [this entry])
+  (info [this entry])
+  (warn [this entry])
+  (error [this entry])
+  (fatal [this entry]))
+
+(defrecord Logger [levels
+                   ;; deps
+                   appender
+                   layout]
+  component/Lifecycle
+  (start [this]
+    (println levels)
+    (-> this (assoc :levels (set levels))))
+  (stop [this] this)
+
+  ILogger
+  (log [this level message]
+    (when (log? this level)
+      (let [ts (uv/uv_hrtime)
+            ;; t (timeval)
+            ;; _ (gettimeofday t (buffer 0))
+            ;; _ (prn t)
+            entry (->Message level
+                             (name *ns*)
+                             ts
+                             message)]
+        (a/append! appender entry))))
+
+  (log? [this level]
+    (contains? levels level))
+
+  (debug [this message]
+    (log this :debug message))
+
+  (trace [this message]
+    (log this :trace message))
+
+  (info [this message]
+    (log this :info message))
+
+  (warn [this message]
+    (log this :warn message))
+
+  (error [this message]
+    (log this :error message))
+
+  (fatal [this message]
+    (log this :fatal message)))
+
+(defn new-logger
+  ([] (new-logger {}))
+  ([opts]
+   (map->Logger opts)))
+
+;;
+;; testing the whole thing
+;;
 
 (defn example-system [opts]
   (let [opts (merge default-opts opts)]
     (-> (component/system-map
-         :options opts
-         :appenderA (component/using l/default-appender
+         :appenderA (component/using default-appender
                                      {:layout :layoutA})
-         :layoutA l/default-layout
-         :logger (component/using (l/new-logger)
-                                  {:appender :appenderA}))
+         :layoutA default-layout
+         :loggerA (component/using (new-logger {:levels [:info :error]})
+                                   {:appender :appenderA}))
         component/start)))
-
-(defn log [sys level message]
-  (when (-> sys :options :levels (contains? level))
-    (l/log (:logger sys) level message)))
-
-(defn debug [sys message]
-  (log sys :debug message))
-
-(defn trace [sys message]
-  (log sys :trace message))
-
-(defn info [sys message]
-  (log sys :info message))
-
-(defn warn [sys message]
-  (log sys :warn message))
-
-(defn error [sys message]
-  (log sys :error message))
-
-(defn fatal [sys message]
-  (log sys :fatal message))

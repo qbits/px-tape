@@ -5,15 +5,11 @@
    [pixie.async :as async]))
 
 (t/deftest test-logging
-  (let [logger (tape/example-system {:levels #{:info :error}})]
+  (let [sys (tape/example-system {:levels #{:info :error}})]
+    (prn sys)
     (dotimes [i 100]
-      (async/future (tape/log logger :info (str ":one " i)))
-      (async/future(tape/log logger :warn (str ":two" i)))
-      (async/future (tape/log logger :error (str ":tree" i))))
+      (async/future (tape/log (:loggerA sys) :info (str ":one " i)))
+      (async/future (tape/info (:loggerA sys) (str ":two " i)))
+      (async/future(tape/warn (:loggerA sys) (str ":three" i)))
+      (async/future (tape/log (:loggerA sys) :error (str ":four" i))))
     @(async/promise)))
-
-  ;; (let [logger (tape/example-system {:levels #{:info :error}})]
-  ;;   (tape/log logger :info "lambda :one")
-  ;;   (tape/log logger :warn "lambda :two")
-  ;;   (tape/log logger :error "lambda :tree")
-  ;;   @(async/promise))
