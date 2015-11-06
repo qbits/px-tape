@@ -1,4 +1,4 @@
-# Logs stuff
+# Tape
 
 <img src="http://i.imgur.com/yNrbl1D.png" title="Hosted by imgur.com" align="right"/>
 
