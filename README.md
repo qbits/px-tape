@@ -1,5 +1,7 @@
 # Logs stuff
 
+<img src="http://i.imgur.com/yNrbl1D.png" title="Hosted by imgur.com" align="right"/>
+
 Simple composable logging library for pixie, provides the building
 blocks to make something not too awful (hopefully).
 
