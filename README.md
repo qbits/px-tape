@@ -1,17 +1,17 @@
 # Logs stuff
 
 Simple composable logging library for pixie, provides the building
-blocks ([components](https://github.com/mpenet/component)) to make
-something not too awful (hopefully).
+blocks to make something not too awful (hopefully).
 
 The main idea is to provide
 [components](https://github.com/mpenet/component) for appenders,
 loggers, layouts and let the user compose them how he likes in his own
-logging systems. For instance, you can share the same appender for all
-levels or not, have multiple appenders for X levels, different layouts
-etc, etc. Every component is **very** simple. I can imagine to provide
-default systems for common usages down the road and also a way to
-generate/load systems from config as data (file, edn, etc).
+logging systems/components. For instance, you can share the same
+appender for all levels or not, have multiple appenders for X levels,
+different layouts etc, etc. Every component is **very** simple. I can
+imagine to provide default systems for common usages down the road and
+also a way to generate/load systems from config as data (file, edn,
+etc).
 
 Work in progress.
 
