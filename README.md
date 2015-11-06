@@ -22,7 +22,7 @@ Work in progress.
 
 <!-- ```clojure -->
 <!-- [mpenet/tape "0.1.1-alpha"] -->
-```
+<!-- ``` -->
 
 ## License
 
