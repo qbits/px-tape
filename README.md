@@ -23,7 +23,7 @@ Work in progress.
 <!-- your project.edn `:dependencies`: -->
 
 ```clojure
-[mpenet/tape "0.1.1-alpha"]
+[qbits/tape "0.1.1-alpha"]
 ```
 
 ## License

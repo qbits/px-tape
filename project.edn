@@ -1,5 +1,5 @@
 {:name qbits/tape
- :dependencies [[mpenet/component "0.1.0-alpha"]
-                [mpenet/aeon "0.1.0-alpha"]]
+ :dependencies [[qbits/component "0.1.0-alpha"]
+                [qbits/aeon "0.1.0-alpha"]]
  :license {:name "Eclipse Public License"
            :url "http://www.eclipse.org/legal/epl-v10.html"}}
