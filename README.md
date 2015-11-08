@@ -6,7 +6,7 @@ Simple composable logging library for pixie, provides the building
 blocks to make something not too awful (hopefully).
 
 The main idea is to provide
-[components](https://github.com/mpenet/component) for appenders,
+[components](https://github.com/qbits/component) for appenders,
 loggers, layouts and let the user compose them how he likes in his own
 logging systems/components. For instance, you can share the same
 appender for all levels or not, have multiple appenders for X levels,
@@ -22,9 +22,9 @@ Work in progress.
 <!-- With [dust](https://github.com/pixie-lang/dust), add the following to -->
 <!-- your project.edn `:dependencies`: -->
 
-<!-- ```clojure -->
-<!-- [mpenet/tape "0.1.1-alpha"] -->
-<!-- ``` -->
+```clojure
+[mpenet/tape "0.1.1-alpha"]
+```
 
 ## License
 
