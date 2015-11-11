@@ -30,8 +30,9 @@
           ch (csp/chan buffer-size)]
       (csp/go
         (loop []
-          (io/spit fos (str (format layout (csp/<! ch)) "\n"))
-          (recur)))
+          (when-let [msg (csp/<! ch)]
+            (io/spit fos (str (format layout msg) "\n"))
+            (recur))))
       (-> this
           (assoc :chan ch)
           (assoc :file-output-stream fos))))

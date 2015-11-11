@@ -19,9 +19,10 @@
     (let [ch (csp/chan buffer-size)]
       (csp/go
         (loop []
-          (io/spit tty/stdout (str (format layout (csp/<! ch))
-                                   "\n"))
-          (recur)))
+          (when-let [msg (csp/<! ch)]
+            (io/spit tty/stdout (str (format layout msg)
+                                     "\n"))
+            (recur))))
       (-> this (assoc :chan ch))))
   (stop [this]
     (csp/close! chan)
