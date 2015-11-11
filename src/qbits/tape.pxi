@@ -3,6 +3,7 @@
    [qbits.component :as component :refer [start stop]]
    [qbits.tape.layout.default :as layout]
    [qbits.tape.appender.console :as console]
+   [qbits.tape.appender.file :as file]
    [qbits.aeon :as time]
    [pixie.uv :as uv]
    [qbits.tape.appender :as a]))
@@ -86,6 +87,7 @@
   ([opts]
    (map->Logger opts)))
 
+
 ;;
 ;; testing the whole thing
 ;;
@@ -95,7 +97,11 @@
     (-> (component/system-map
          :appenderA (component/using default-appender
                                      {:layout :layoutA})
+         :appenderB (component/using (file/new-file-appender {:file "./test.log"})
+                                     {:layout :layoutA})
          :layoutA default-layout
          :loggerA (component/using (new-logger default-opts)
-                                   {:appender :appenderA}))
+                                   {:appender :appenderA})
+         :loggerB (component/using (new-logger default-opts)
+                                   {:appender :appenderB}))
         component/start)))
