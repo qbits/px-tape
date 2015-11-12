@@ -23,7 +23,7 @@
 (def libc (ffi-library pixie.platform/lib-c-name))
 (def strlen (ffi-fn libc "strlen" [CCharP] CInt))
 
-(uv/defuvfsfn fs-rename pixie.uv/uv_fs_rename [source dest] :path)
+(uv/defuvfsfn fs-rename pixie.uv/uv_fs_rename [source dest] :result)
 
 ;;
 
@@ -89,8 +89,7 @@
               (if (>= (+ fsize mlen) max-file-size)
                 (do
                   (dispose! fos)
-                  (fs-rename file (str file "." (time/format (time/new-datetime)
-                                                             "%Y%m%d%H%M%S")))
+                  (fs-rename file (str file "." (uv/uv_hrtime)))
                   (let [fos (open-write file)]
                     (io/spit fos s)
                     (recur fos mlen)))
@@ -110,4 +109,7 @@
 (defn new-rolling-file-appender
   ([] (new-rolling-file-appender nil))
   ([opts]
-   (map->RollingFileAppender (merge default-options {:max-file-size 1000} opts))))
+   (map->RollingFileAppender
+    (merge default-options
+           {:max-file-size (* 5 1024 1024)}
+           opts))))
