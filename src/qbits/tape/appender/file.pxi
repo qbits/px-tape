@@ -79,6 +79,7 @@
                                 layout]
   component/Lifecycle
   (start [this]
+    ;; todo add some manual flush!
     (let [ch (csp/chan buffer-size)]
       (csp/go
         (loop [fos (open-write file)
