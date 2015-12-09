@@ -26,6 +26,55 @@ Work in progress.
 [qbits/tape "0.1.1-alpha"]
 ```
 
+## Example
+
+
+```clojure
+(require
+   '[qbits.tape :as tape]
+   '[qbits.component :as component]
+   '[qbits.tape.layout.default :as layout]
+   '[qbits.tape.appender.console :as console]
+   '[qbits.tape.appender.file :as file]
+   '[qbits.tape.appender :as a]   )
+
+;; Create a logging system constructor
+;; with different loggers using shared or independent appenders/layouts
+
+(defn example-system [opts]
+  (let [opts (merge default-opts opts)]
+    (-> (component/system-map
+         :appenderA (component/using default-appender
+                                     {:layout :layoutA})
+         :appenderB (component/using (file/new-file-appender {:file "./test.log"})
+                                     {:layout :layoutA})
+
+         :appenderC (component/using (file/new-rolling-file-appender {:file "./testr.log"})
+                                     {:layout :layoutA})
+         :layoutA default-layout
+         :loggerA (component/using (new-logger default-opts)
+                                   {:appender :appenderA})
+         :loggerB (component/using (new-logger default-opts)
+                                   {:appender :appenderB})
+
+         :loggerB (component/using (new-logger default-opts)
+                                   {:appender :appenderB})
+
+         :loggerC (component/using (new-logger default-opts)
+                                   {:appender :appenderC}))
+                                   component/start)))
+
+;; initialize with default log :levels
+(def sys (example-system {:levels #{:info :error}}))
+
+;; log stuff
+(tape/warn (:loggerB sys) "two")
+(tape/info (:loggerB sys) "two")
+(tape/log (:loggerA sys) :info "one")
+(tape/log (:loggerC sys) :error "three")
+
+```
+
 ## License
 
 Copyright © 2015 [Max Penet](https://twitter.com/mpenet)
