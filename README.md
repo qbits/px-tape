@@ -36,7 +36,7 @@ Work in progress.
    '[qbits.tape.layout.default :as layout]
    '[qbits.tape.appender.console :as console]
    '[qbits.tape.appender.file :as file]
-   '[qbits.tape.appender :as a]   )
+   '[qbits.tape.appender :as a])
 
 ;; Create a logging system constructor
 ;; with different loggers using shared or independent appenders/layouts
@@ -51,7 +51,7 @@ Work in progress.
 
          :appenderC (component/using (file/new-rolling-file-appender {:file "./testr.log"})
                                      {:layout :layoutA})
-         :layoutA default-layout
+         :layoutA qbits.tape/default-layout
          :loggerA (component/using (new-logger default-opts)
                                    {:appender :appenderA})
          :loggerB (component/using (new-logger default-opts)
